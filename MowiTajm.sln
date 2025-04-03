@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MowiTajm", "MowiTajm\MowiTajm.csproj", "{B93A9292-3A7B-4F56-B682-EE9E78CCE3E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E2ETesting", "E2ETesting-main\E2ETesting.csproj", "{2C88B486-ACD3-D2A3-25AF-71361D41F7A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +17,15 @@ Global
 		{B93A9292-3A7B-4F56-B682-EE9E78CCE3E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B93A9292-3A7B-4F56-B682-EE9E78CCE3E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B93A9292-3A7B-4F56-B682-EE9E78CCE3E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C88B486-ACD3-D2A3-25AF-71361D41F7A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C88B486-ACD3-D2A3-25AF-71361D41F7A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C88B486-ACD3-D2A3-25AF-71361D41F7A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C88B486-ACD3-D2A3-25AF-71361D41F7A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C42D253E-AC2D-4859-993D-DC1433E039EC}
 	EndGlobalSection
 EndGlobal
