@@ -13,10 +13,10 @@
 
     @* Två knappar för att hantera användare eller recensioner *@
     <form class="admin-main-buttons" method="post">
-        <button type="submit" asp-page-handler="LoadUsers" class="btn-design btn-admin-menu @(Model.ShowReviews ? "" : "active")">
+        <button id="LoadUsers" type="submit" asp-page-handler="LoadUsers" class="btn-design btn-admin-menu @(Model.ShowReviews ? "" : "active")">
             Hantera användare
         </button>
-        <button type="submit" asp-page-handler="LoadReviews" class="btn-design btn-admin-menu @(Model.ShowReviews ? "active" : "")">
+        <button id="LoadReviews" type="submit" asp-page-handler="LoadReviews" class="btn-design btn-admin-menu @(Model.ShowReviews ? "active" : "")">
             Hantera recensioner
         </button>
     </form>

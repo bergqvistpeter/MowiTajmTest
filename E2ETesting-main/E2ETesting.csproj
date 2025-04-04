@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <AssemblyName>E2ETesting</AssemblyName>
@@ -18,9 +18,12 @@
         <PackageReference Include="SpecFlow" Version="4.0.31-beta" />
         <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="4.0.31-beta" />
         <PackageReference Include="SpecFlow.xUnit" Version="4.0.31-beta" />
-        <PackageReference Include="xunit" Version="2.5.3" />
+        <PackageReference Include="xunit" Version="2.9.3" />
         <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>

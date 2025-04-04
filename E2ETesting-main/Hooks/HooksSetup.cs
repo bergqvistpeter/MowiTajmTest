@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TechTalk.SpecFlow;
+using Xunit;
 
 namespace E2ETesting.Hooks
 {
@@ -25,7 +26,7 @@ namespace E2ETesting.Hooks
             _context = await _browser.NewContextAsync();
             _page = await _context.NewPageAsync();
             pageObject = _page;
-           
+
 
             // Om taggen 'AdminLogin' finns, logga in
             if (_scenarioContext.ScenarioInfo.Tags.Contains("AdminLogin"))
@@ -35,6 +36,34 @@ namespace E2ETesting.Hooks
                 await _page.FillAsync("input[name='Input.Password']", "Peter_123");
                 await _page.ClickAsync("#login-submit");
                 await _page.WaitForURLAsync("**/Movies");
+            }
+
+            if (_scenarioContext.ScenarioInfo.Tags.Contains("DeleteReviewAdmin"))
+            {
+                await _page.GotoAsync("https://localhost:7295/Identity/Account/Login");
+                await _page.FillAsync("input[name='Input.Email']", "peter.bergqvist@edu.newton.se");
+                await _page.FillAsync("input[name='Input.Password']", "Peter_123");
+                await _page.ClickAsync("#login-submit");
+                await _page.WaitForURLAsync("**/Movies");
+                await _page.FillAsync("#search-input", "Kopps");
+                await _page.ClickAsync("#search-btn"); 
+                await _page.ClickAsync("article.search-result-movie-row");
+                await _page.ClickAsync("label.review-input-star[for='star1']");
+                await _page.FillAsync("#Review_Title","Världens sämsta film");
+                await _page.FillAsync("#Review_Text", "Slösa inte med er tid!");
+                await _page.ClickAsync("button.btn-design.btn-black[title='Publicera recension']");
+                _page.Dialog += async (_, dialog) =>
+                {
+                    if (dialog.Type == "confirm")
+                    {
+                        await dialog.AcceptAsync(); // Tryck på "OK" för att acceptera dialogen
+                    }
+                };
+                await _page.GotoAsync("https://localhost:7295/Identity/Admin");
+                await _page.ClickAsync("#LoadReviews");
+
+
+
             }
         }
        

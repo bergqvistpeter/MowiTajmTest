@@ -10,6 +10,7 @@ namespace E2ETesting.Steps
     [Binding]
     public class AdminPageSteps(ScenarioContext scenarioContext) : BaseSteps(scenarioContext)
     {
+
         //Scenario: Logga in som Admin
         //Om jag är på Loginsidan
         [Given(@"I am on the login page")]
@@ -92,6 +93,139 @@ namespace E2ETesting.Steps
         {
             await _page.WaitForURLAsync("**/Admin");
             Assert.Contains("/Admin", _page.Url);
+        }
+
+        //Scenario: Switching between Hantera Användare och Hantera Recensioner
+
+        //Om jag är på Admin sidan
+        [Given(@"I am on the Admin Page")]
+        public async Task GivenIAmOnTheAdminPage()
+        {
+            _page = HooksSetup.pageObject;
+            await _page.GotoAsync("https://localhost:7295/Identity/Admin");
+            Assert.Contains("/Admin", _page.Url);
+
+        }
+
+        //Och jag ser Hantera Användare Listan
+        [Given(@"I see the Hantera Användare List")]
+        public async Task GivenISeeTheHanteraAnvandareList()
+        {
+            // Vänta tills knappen är synlig
+            var button = await _page.WaitForSelectorAsync("#LoadUsers");
+
+            // Kontrollera att knappen har klassen "active"
+            bool isActive = await button.EvaluateAsync<bool>("button => button.classList.contains('active')");
+
+            Assert.True(isActive, "Knappen är inte aktiv.");
+        }
+
+        //När jag trycker på Hantera Recensioner
+        [When(@"I click the Hantera Recensioner button")]
+        public async Task WhenIClickTheHanteraRecensionerButton()
+        {
+            await _page.ClickAsync("#LoadReviews");
+        }
+
+        [Then(@"I should see the Recensioner List")]
+        public async Task ThenIShouldSeeTheRecensionerList()
+        {
+            // Vänta tills knappen är synlig
+            var button = await _page.WaitForSelectorAsync("#LoadReviews");
+
+            // Kontrollera att knappen har klassen "active"
+            bool isActive = await button.EvaluateAsync<bool>("button => button.classList.contains('active')");
+
+            Assert.True(isActive, "Knappen är inte aktiv.");
+        }
+
+
+        //Scenario: Deleting a Review in the Hantera Recensioner list as Admin
+
+        [Given(@"I see the Recensioners List")]
+        public async Task GivenISeeTheRecensionersList()
+        {
+            // Vänta tills knappen är synlig
+            var button = await _page.WaitForSelectorAsync("#LoadReviews");
+
+            // Kontrollera att knappen har klassen "active"
+            bool isActive = await button.EvaluateAsync<bool>("button => button.classList.contains('active')");
+
+            Assert.True(isActive, "Knappen är inte aktiv.");
+        }
+
+        [When(@"I click the delete button on the latest review added")]
+        public async Task WhenIClickTheDeleteButtonOnTheLatestReviewAdded()
+        {
+            // Hitta alla recensioner (tr-taggar) på sidan
+            var reviews = await _page.QuerySelectorAllAsync("tr.review-row");
+
+            // Sortera recensionerna efter datum (t.ex. den senaste recensionen är den med det största datumet)
+            var latestReview = reviews.OrderByDescending(async review =>
+            {
+                var dateElement = await review.QuerySelectorAsync("td:nth-child(6)"); // Kolumnen med datum
+                var dateText = await dateElement.GetPropertyAsync("textContent"); // Hämta textinnehåll
+                return DateTime.Parse(dateText.ToString().Trim()); // Trimma och omvandla texten till DateTime
+            }).FirstOrDefault();
+
+            if (latestReview != null)
+            {
+                // Hitta delete-knappen på samma rad som den senaste recensionen
+                var deleteButton = await latestReview.QuerySelectorAsync("button[title='Ta bort recension']");
+
+                // Klicka på delete-knappen
+                await deleteButton.ClickAsync();
+
+                // Eventuellt hantera dialogen om bekräftelse
+                _page.Dialog += async (_, dialog) =>
+                {
+                    if (dialog.Type == "confirm")
+                    {
+                        await dialog.AcceptAsync(); // Klicka på "OK" för att acceptera dialogen
+                    }
+                };
+            }
+            else
+            {
+                throw new Exception("Ingen recension hittades.");
+            }
+        }
+
+        [Then(@"the Review should be removed")]
+        public async Task ThenTheReviewShouldBeRemoved()
+        {
+            // Hämta alla recensioner på sidan
+            var reviews = await _page.QuerySelectorAllAsync("tr.review-row");
+
+            // Definiera de specifika värdena från den recension som vi just tog bort
+            string deletedMovieName = "Kopps";  // Filmnamn på den borttagna recensionen
+            string deletedUsername = "Bqvist";  // Användarnamn på den borttagna recensionen
+            string deletedDate = DateTime.Now.ToString("yyyy-MM-dd");  // Använd dagens datum (t.ex. "2025-04-04")
+
+            bool reviewFound = false;
+
+            // Hitta den borttagna recensionen genom att matcha filmnamn, användarnamn och datum
+            foreach (var review in reviews)
+            {
+                // Hämta filmnamnet, användarnamnet och datumet för recensionen
+                var movieName = await review.QuerySelectorAsync("td.movie-column a");
+                var username = await review.QuerySelectorAsync("td:nth-child(5)"); // Användarnamn på kolumn 5 (justera vid behov)
+                var reviewDate = await review.QuerySelectorAsync("td:nth-child(6)"); // Datum på kolumn 6 (justera vid behov)
+
+                var movieText = await movieName.InnerTextAsync();
+                var usernameText = await username.InnerTextAsync();
+                var dateText = await reviewDate.InnerTextAsync();
+
+                // Kontrollera om filmnamn, användarnamn och datum matchar den borttagna recensionen
+                if (movieText.Contains(deletedMovieName) && usernameText.Contains(deletedUsername) && dateText.Contains(deletedDate))
+                {
+                    reviewFound = true;
+                    break;
+                }
+            }
+
+            // Kontrollera att recensionen inte finns kvar
+            Assert.False(reviewFound, "Recensionen finns fortfarande kvar i listan.");
         }
 
     }

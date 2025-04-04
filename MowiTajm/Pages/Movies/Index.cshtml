@@ -22,8 +22,8 @@
 
     @* Sökfunktionen *@
     <form class="search-input" method="get">
-        <input type="text" class="form-control me-2" name="searchInput" placeholder="Sök på en titel.." value="@Model.SearchInput" required maxlength="100"/>
-        <button class="btn btn-primary btn-search btn-black" type="submit" title="Sök" aria-label="Sök">⌕</button>
+        <input id="search-input" type="text" class="form-control me-2" name="searchInput" placeholder="Sök på en titel.." value="@Model.SearchInput" required maxlength="100"/>
+        <button id="search-btn"class="btn btn-primary btn-search btn-black" type="submit" title="Sök" aria-label="Sök">⌕</button>
 	</form>
 
     @if (!string.IsNullOrEmpty(Model.SearchInput))

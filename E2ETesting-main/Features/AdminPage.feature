@@ -23,9 +23,23 @@ Scenario: Clicking the Admin button
 	When I click the Admin button
 	Then I should be redirected to the Admin page
 
+@Admin
+@AdminPage
+@AdminLogin
+Scenario: Switching between Hantera Användare och Hantera Recensioner
+	Given I am on the Admin Page
+	And I see the Hantera Användare List
+	When I click the Hantera Recensioner button
+	Then I should see the Recensioner List
 
-@ignore
-Scenario: See the Admin Button
-	Given [context]
-	When [action]
-	Then [outcome]
+@DeleteReviewAdmin
+Scenario: Deleting a Review in the Hantera Recensioner list as Admin
+	Given I am on the Admin Page
+	And I see the Recensioners List
+	When I click the delete button on the latest review added
+	Then the Review should be removed
+
+
+
+
+
