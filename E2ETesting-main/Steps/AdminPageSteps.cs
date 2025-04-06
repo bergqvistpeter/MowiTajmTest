@@ -1,9 +1,13 @@
-using System;
+Ôªøusing System;
 using TechTalk.SpecFlow;
 using Microsoft.Playwright;
 using Microsoft.Identity.Client;
 using Microsoft.JSInterop.Infrastructure;
 using E2ETesting.Hooks;
+using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Threading.Tasks;
+
 
 namespace E2ETesting.Steps
 {
@@ -12,7 +16,7 @@ namespace E2ETesting.Steps
     {
 
         //Scenario: Logga in som Admin
-        //Om jag ‰r pÂ Loginsidan
+        //Om jag √§r p√• Loginsidan
         [Given(@"I am on the login page")]
         public async Task GivenIAmOnTheLoginPage()
         {
@@ -26,33 +30,33 @@ namespace E2ETesting.Steps
         {
             await _page.FillAsync("input[name='Input.Email']", username);
         }
-        //Jag skriver in Admin Lˆsenord
+        //Jag skriver in Admin L√∂senord
         [When(@"I enter ""(.*)"" as the password")]
         public async Task WhenIEnterAsThePassword(string password)
         {
             await _page.FillAsync("input[name='Input.Password']", password);
         }
-        // Jag klickar pÂ logga in knappen
-        [When(@"I click the logga in button button")]
+        // Jag klickar p√• logga in knappen
+        [When(@"I click the logga in button")]
         public async Task WhenIClickTheLoggaInButtonButton()
         {
             await _page.ClickAsync("#login-submit");
         }
 
 
-        // DÂ ska jag  se Admin knappen
+        // D√• ska jag  se Admin knappen
         [Then(@"I should see the Admin button")]
         public async Task ThenIShouldSeeTheAdminButton()
         {
             var isVisible = await _page.IsVisibleAsync("a[href='/Identity/Admin']");
-            Assert.True(isVisible, "Admin-knappen ‰r inte synlig pÂ sidan.");
+            Assert.True(isVisible, "Admin-knappen √§r inte synlig p√• sidan.");
         }
 
         [Then(@"I should be Logged in")]
         public async Task ThenIShouldBeLoggedIn()
         {
             await _page.WaitForURLAsync("https://localhost:7295/Movies");
-            // Kontrollera att jag ‰r inloggad
+            // Kontrollera att jag √§r inloggad
             var loggedIn = await _page.Locator("text=Logga ut").IsVisibleAsync();
         }
 
@@ -65,7 +69,7 @@ namespace E2ETesting.Steps
 
         //Scenario: Clicking the Admin button
 
-        // Om jag ‰r pÂ Index sidan
+        // Om jag √§r p√• Index sidan
         [Given(@"I am on the Index Page")]
         public async Task GivenIAmOnTheIndexPage()
         {
@@ -74,12 +78,12 @@ namespace E2ETesting.Steps
 
         }
 
-        //Och jag ‰r inloggad som Admin
+        //Och jag √§r inloggad som Admin
         [Given(@"I am logged in as Admin")]
         public async Task GivenIAmLoggedInAsAdmin()
         {
             var isVisible = await _page.IsVisibleAsync("a[href='/Identity/Admin']");
-            Assert.True(isVisible, "Admin-knappen ‰r inte synlig pÂ sidan.");
+            Assert.True(isVisible, "Admin-knappen √§r inte synlig p√• sidan.");
         }
 
         [When(@"I click the Admin button")]
@@ -95,9 +99,9 @@ namespace E2ETesting.Steps
             Assert.Contains("/Admin", _page.Url);
         }
 
-        //Scenario: Switching between Hantera Anv‰ndare och Hantera Recensioner
+        //Scenario: Switching between Hantera Anv√§ndare och Hantera Recensioner
 
-        //Om jag ‰r pÂ Admin sidan
+        //Om jag √§r p√• Admin sidan
         [Given(@"I am on the Admin Page")]
         public async Task GivenIAmOnTheAdminPage()
         {
@@ -107,20 +111,20 @@ namespace E2ETesting.Steps
 
         }
 
-        //Och jag ser Hantera Anv‰ndare Listan
-        [Given(@"I see the Hantera Anv‰ndare List")]
+        //Och jag ser Hantera Anv√§ndare Listan
+        [Given(@"I see the Hantera Anv√§ndare List")]
         public async Task GivenISeeTheHanteraAnvandareList()
         {
-            // V‰nta tills knappen ‰r synlig
+            // V√§nta tills knappen √§r synlig
             var button = await _page.WaitForSelectorAsync("#LoadUsers");
 
             // Kontrollera att knappen har klassen "active"
             bool isActive = await button.EvaluateAsync<bool>("button => button.classList.contains('active')");
 
-            Assert.True(isActive, "Knappen ‰r inte aktiv.");
+            Assert.True(isActive, "Knappen √§r inte aktiv.");
         }
 
-        //N‰r jag trycker pÂ Hantera Recensioner
+        //N√§r jag trycker p√• Hantera Recensioner
         [When(@"I click the Hantera Recensioner button")]
         public async Task WhenIClickTheHanteraRecensionerButton()
         {
@@ -130,13 +134,13 @@ namespace E2ETesting.Steps
         [Then(@"I should see the Recensioner List")]
         public async Task ThenIShouldSeeTheRecensionerList()
         {
-            // V‰nta tills knappen ‰r synlig
+            // V√§nta tills knappen √§r synlig
             var button = await _page.WaitForSelectorAsync("#LoadReviews");
 
             // Kontrollera att knappen har klassen "active"
             bool isActive = await button.EvaluateAsync<bool>("button => button.classList.contains('active')");
 
-            Assert.True(isActive, "Knappen ‰r inte aktiv.");
+            Assert.True(isActive, "Knappen √§r inte aktiv.");
         }
 
 
@@ -145,45 +149,67 @@ namespace E2ETesting.Steps
         [Given(@"I see the Recensioners List")]
         public async Task GivenISeeTheRecensionersList()
         {
-            // V‰nta tills knappen ‰r synlig
+            await _page.ClickAsync("#LoadReviews");
+            // V√§nta tills knappen √§r synlig
             var button = await _page.WaitForSelectorAsync("#LoadReviews");
 
             // Kontrollera att knappen har klassen "active"
             bool isActive = await button.EvaluateAsync<bool>("button => button.classList.contains('active')");
-
-            Assert.True(isActive, "Knappen ‰r inte aktiv.");
+            Assert.NotNull(button);
+            Assert.True(isActive, "Knappen √§r inte aktiv.");
+            
         }
 
         [When(@"I click the delete button on the latest review added")]
         public async Task WhenIClickTheDeleteButtonOnTheLatestReviewAdded()
         {
-            // Hitta alla recensioner (tr-taggar) pÂ sidan
+            // H√§mta alla recensioner (tr-taggar) p√• sidan
             var reviews = await _page.QuerySelectorAllAsync("tr.review-row");
 
-            // Sortera recensionerna efter datum (t.ex. den senaste recensionen ‰r den med det stˆrsta datumet)
-            var latestReview = reviews.OrderByDescending(async review =>
+            // H√§mta och konvertera datum f√∂r varje recension
+            var reviewData = new List<(IElementHandle Review, DateTime Date)>();
+
+            foreach (var review in reviews)
             {
                 var dateElement = await review.QuerySelectorAsync("td:nth-child(6)"); // Kolumnen med datum
-                var dateText = await dateElement.GetPropertyAsync("textContent"); // H‰mta textinnehÂll
-                return DateTime.Parse(dateText.ToString().Trim()); // Trimma och omvandla texten till DateTime
-            }).FirstOrDefault();
+                if (dateElement != null)
+                {
+                    var dateText = await dateElement.GetPropertyAsync("textContent");
+                    if (dateText != null)
+                    {
+                        if (DateTime.TryParse(dateText.ToString().Trim(), out DateTime parsedDate))
+                        {
+                            reviewData.Add((review, parsedDate));
+                        }
+                    }
+                }
+            }
+
+            // Sortera recensionerna efter datum i fallande ordning (senaste f√∂rst)
+            var latestReview = reviewData.OrderByDescending(r => r.Date).FirstOrDefault().Review;
 
             if (latestReview != null)
             {
-                // Hitta delete-knappen pÂ samma rad som den senaste recensionen
+                // Hitta delete-knappen p√• samma rad som den senaste recensionen
                 var deleteButton = await latestReview.QuerySelectorAsync("button[title='Ta bort recension']");
-
-                // Klicka pÂ delete-knappen
-                await deleteButton.ClickAsync();
-
-                // Eventuellt hantera dialogen om bekr‰ftelse
-                _page.Dialog += async (_, dialog) =>
+                if (deleteButton != null)
                 {
-                    if (dialog.Type == "confirm")
+                    // Klicka p√• delete-knappen
+                    await deleteButton.ClickAsync();
+
+                    // Eventuellt hantera dialogen om bekr√§ftelse
+                    _page.Dialog += async (_, dialog) =>
                     {
-                        await dialog.AcceptAsync(); // Klicka pÂ "OK" fˆr att acceptera dialogen
-                    }
-                };
+                        if (dialog.Type == "confirm")
+                        {
+                            await dialog.AcceptAsync(); // Klicka p√• "OK" f√∂r att acceptera dialogen
+                        }
+                    };
+                }
+                else
+                {
+                    throw new Exception("Delete-knappen hittades inte.");
+                }
             }
             else
             {
@@ -191,32 +217,34 @@ namespace E2ETesting.Steps
             }
         }
 
+
+
         [Then(@"the Review should be removed")]
         public async Task ThenTheReviewShouldBeRemoved()
         {
-            // H‰mta alla recensioner pÂ sidan
+            // H√§mta alla recensioner p√• sidan
             var reviews = await _page.QuerySelectorAllAsync("tr.review-row");
 
-            // Definiera de specifika v‰rdena frÂn den recension som vi just tog bort
-            string deletedMovieName = "Kopps";  // Filmnamn pÂ den borttagna recensionen
-            string deletedUsername = "Bqvist";  // Anv‰ndarnamn pÂ den borttagna recensionen
-            string deletedDate = DateTime.Now.ToString("yyyy-MM-dd");  // Anv‰nd dagens datum (t.ex. "2025-04-04")
+            // Definiera de specifika v√§rdena fr√•n den recension som vi just tog bort
+            string deletedMovieName = "Kopps";  // Filmnamn p√• den borttagna recensionen
+            string deletedUsername = "Bqvist";  // Anv√§ndarnamn p√• den borttagna recensionen
+            string deletedDate = DateTime.Now.ToString("yyyy-MM-dd");  // Anv√§nd dagens datum (t.ex. "2025-04-04")
 
             bool reviewFound = false;
 
-            // Hitta den borttagna recensionen genom att matcha filmnamn, anv‰ndarnamn och datum
+            // Hitta den borttagna recensionen genom att matcha filmnamn, anv√§ndarnamn och datum
             foreach (var review in reviews)
             {
-                // H‰mta filmnamnet, anv‰ndarnamnet och datumet fˆr recensionen
+                // H√§mta filmnamnet, anv√§ndarnamnet och datumet f√∂r recensionen
                 var movieName = await review.QuerySelectorAsync("td.movie-column a");
-                var username = await review.QuerySelectorAsync("td:nth-child(5)"); // Anv‰ndarnamn pÂ kolumn 5 (justera vid behov)
-                var reviewDate = await review.QuerySelectorAsync("td:nth-child(6)"); // Datum pÂ kolumn 6 (justera vid behov)
+                var username = await review.QuerySelectorAsync("td:nth-child(5)"); // Anv√§ndarnamn p√• kolumn 5 (justera vid behov)
+                var reviewDate = await review.QuerySelectorAsync("td:nth-child(6)"); // Datum p√• kolumn 6 (justera vid behov)
 
                 var movieText = await movieName.InnerTextAsync();
                 var usernameText = await username.InnerTextAsync();
                 var dateText = await reviewDate.InnerTextAsync();
 
-                // Kontrollera om filmnamn, anv‰ndarnamn och datum matchar den borttagna recensionen
+                // Kontrollera om filmnamn, anv√§ndarnamn och datum matchar den borttagna recensionen
                 if (movieText.Contains(deletedMovieName) && usernameText.Contains(deletedUsername) && dateText.Contains(deletedDate))
                 {
                     reviewFound = true;
@@ -226,6 +254,120 @@ namespace E2ETesting.Steps
 
             // Kontrollera att recensionen inte finns kvar
             Assert.False(reviewFound, "Recensionen finns fortfarande kvar i listan.");
+        }
+
+        //Scenario Outline: Att sortera recensioner efter betyg p√• Hantera Recensioner Sidan
+
+        //N√§r jag v√§ljer ett betyg fr√•n betygsfilter
+
+        [When(@"I select ""([^""]*)"" from the rating filter")]
+        public async Task WhenISelectFromTheRatingFilter(string rating)
+        {
+            // üîπ V√§nta p√• att dropdown-menyn blir synlig
+            await _page.WaitForSelectorAsync("#ratingFilter");
+
+            // üîπ V√§lj betyget fr√•n dropdown-menyn
+            await _page.SelectOptionAsync("#ratingFilter", new SelectOptionValue { Label = rating });
+
+            // üîπ V√§nta en kort stund s√• att filtreringen kan uppdateras
+            await _page.WaitForTimeoutAsync(1000);
+        }
+
+        // d√• ska jag se recensioner med det valda betyget i Hantera Recensioner listan
+
+        [Then(@"^I should see reviews with ""(.*)""$")]
+        public async Task ThenIShouldSeeReviewsWith(string expectedRating)
+        {
+            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle); // V√§nta tills filtret √§r klart
+
+            // H√§mta alla recensioner
+            var allReviews = await _page.QuerySelectorAllAsync("tr.review-row");
+
+            // Filtrera ut synliga recensioner
+            var visibleReviews = new List<IElementHandle>();
+            foreach (var review in allReviews)
+            {
+                if (await review.IsVisibleAsync()) // Kontrollera om recensionen √§r synlig
+                {
+                    visibleReviews.Add(review);
+                }
+            }
+
+            Assert.True(visibleReviews.Any(), "‚ùå Inga synliga recensioner hittades efter filtrering.");
+
+            // H√§mta betygen f√∂r de synliga recensionerna
+            var ratings = new List<string>();
+            foreach (var review in visibleReviews)
+            {
+                var ratingElement = await review.QuerySelectorAsync("td:nth-child(4)");
+                if (ratingElement != null)
+                {
+                    var rating = await ratingElement.InnerTextAsync();
+                    ratings.Add(rating.Trim());
+                }
+            }
+
+            // Kontrollera om alla betyg matchar det f√∂rv√§ntade betyget
+            bool allRatingsMatch = ratings.All(rating => rating == expectedRating);
+            Assert.True(allRatingsMatch, $"‚ùå Felaktiga recensioner hittades: F√∂rv√§ntat '{expectedRating}', men vissa hade andra betyg: [{string.Join(", ", ratings)}]");
+
+            Console.WriteLine("Alla synliga recensioner har korrekt betyg!");
+        }
+
+
+        //Scenario Outline: Att sortera recensioner efter film
+
+        [When(@"I select ""([^""]*)"" from the movie filter")]
+        public async Task WhenISelectFromTheMovieFilter(string movie)
+        {
+            // üîπ V√§nta p√• att dropdown-menyn blir synlig
+            await _page.WaitForSelectorAsync("#movieFilter");
+
+            // üîπ V√§lj betyget fr√•n dropdown-menyn
+            await _page.SelectOptionAsync("#movieFilter", new SelectOptionValue { Label = movie });
+
+            // üîπ V√§nta en kort stund s√• att filtreringen kan uppdateras
+            await _page.WaitForTimeoutAsync(1000);
+        }
+
+        [Then(@"I should see the reviews matching the movie ""([^""]*)""")]
+        public async Task ThenIShouldSeeTheReviewsMatchingTheMovie(string expectedMovie)
+        {
+            // V√§nta tills recensionerna har laddats och synliga
+            await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+            var allReviews = await _page.QuerySelectorAllAsync("tr.review-row"); // H√§mta alla recensioner
+            var visibleReviews = new List<IElementHandle>();
+
+            // Filtrera synliga recensioner
+            foreach (var review in allReviews)
+            {
+                if (await review.IsVisibleAsync()) // Kontrollera om recensionen √§r synlig
+                {
+                    visibleReviews.Add(review);
+                }
+            }
+
+            // Kontrollera att vi har n√•gra synliga recensioner
+            Assert.True(visibleReviews.Any(), "‚ùå Inga synliga recensioner hittades.");
+
+            // H√§mta filmtiteln fr√•n de synliga recensionerna
+            var movieTitles = new List<string>();
+            foreach (var review in visibleReviews)
+            {
+                var titleElement = await review.QuerySelectorAsync("td:nth-child(1)"); // Anta att filmen √§r i kolumn 1
+                if (titleElement != null)
+                {
+                    var movieTitle = await titleElement.InnerTextAsync();
+                    movieTitles.Add(movieTitle.Trim());
+                }
+            }
+
+            // Kontrollera att alla recensioner matchar den f√∂rv√§ntade filmens titel
+            bool allTitlesMatch = movieTitles.All(title => title.Contains(expectedMovie));
+            Assert.True(allTitlesMatch, $"‚ùå Felaktiga recensioner hittades: F√∂rv√§ntat film '{expectedMovie}', men vissa recensioner hade andra filmer: [{string.Join(", ", movieTitles)}]");
+
+            Console.WriteLine("Alla synliga recensioner har korrekt filmtitel!");
         }
 
     }
