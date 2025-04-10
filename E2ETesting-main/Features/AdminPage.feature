@@ -1,4 +1,4 @@
-﻿Feature: Admidotnet testnPageSteps
+﻿Feature: AdmintestningPageSteps
 
 Tester på vår AdminPage
 

@@ -1,0 +1,151 @@
+{
+	"info": {
+		"_postman_id": "7f8f2c5c-bbc7-4941-aa70-e5748b0f8c6e",
+		"name": "MowiTajmAPITests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43315225"
+	},
+	"item": [
+		{
+			"name": "GET The Dirty Dozen - OMDb API",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Testa så att responsen är 200 OK\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"//Testa så att alla JSON-keys finns i objektet\r",
+							"pm.test(\"Alla JSON-keys finns i objekten\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"Search\");\r",
+							"    jsonData.Search.forEach(movie => {\r",
+							"        pm.expect(movie).to.have.property(\"Title\");\r",
+							"        pm.expect(movie).to.have.property(\"Year\");\r",
+							"        pm.expect(movie).to.have.property(\"imdbID\");\r",
+							"        pm.expect(movie).to.have.property(\"Type\");\r",
+							"        pm.expect(movie).to.have.property(\"Poster\");\r",
+							"    });\r",
+							"});\r",
+							"//Testar så att listan inte är tom\r",
+							"pm.test(\"Minst ett objekt i listan\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Search).to.be.an(\"array\").that.is.not.empty;\r",
+							"});\r",
+							"//Testar att responsen ska vara true\r",
+							"pm.test('Response ska vara \"True\"', function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Response).to.eql(\"True\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://www.omdbapi.com/?s={The Dirty Dozen}&apikey=2e1cb575 ",
+					"protocol": "http",
+					"host": [
+						"www",
+						"omdbapi",
+						"com"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "s",
+							"value": "{The Dirty Dozen}"
+						},
+						{
+							"key": "apikey",
+							"value": "2e1cb575 "
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Film Details - The Dirty Dozen - OMDb API",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Testa att responsen är 200 OK\r",
+							"pm.test(\"Responsen ska vara 200 OK\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//Testa att JSON-svaret innehåller alla nycklar\r",
+							"pm.test(\"Alla JSON-keys finns i svaret\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    let expectedKeys = [\r",
+							"        \"Title\", \"Year\", \"Rated\", \"Released\", \"Runtime\", \"Genre\",\r",
+							"        \"Director\", \"Writer\", \"Actors\", \"Plot\", \"Language\", \r",
+							"        \"Country\", \"Awards\", \"Poster\", \"Ratings\", \"Metascore\",\r",
+							"        \"imdbRating\", \"imdbVotes\", \"imdbID\", \"Type\", \"DVD\",\r",
+							"        \"BoxOffice\", \"Production\", \"Website\", \"Response\"\r",
+							"    ];\r",
+							"\r",
+							"    expectedKeys.forEach(key => {\r",
+							"        pm.expect(jsonData).to.have.property(key);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"//Testa att Ratings-listan innehåller minst en rating\r",
+							"pm.test(\"Ratings-listan ska innehålla minst ett betyg\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Ratings).to.be.an(\"array\").that.is.not.empty;\r",
+							"});\r",
+							"\r",
+							"//Testa att `Response` är `\"True\"`\r",
+							"pm.test('Response ska vara \"True\"', function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Response).to.eql(\"True\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://www.omdbapi.com/?i=tt0061578&apikey=2e1cb575 ",
+					"protocol": "http",
+					"host": [
+						"www",
+						"omdbapi",
+						"com"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "i",
+							"value": "tt0061578"
+						},
+						{
+							"key": "apikey",
+							"value": "2e1cb575 "
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
